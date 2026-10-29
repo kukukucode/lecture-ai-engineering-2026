@@ -1,0 +1,27 @@
+{
+  "model": "Qwen/Qwen3.5-0.8B",
+  "method": "LoRA",
+  "training": {
+    "train_samples": 58,
+    "validation_samples": 58,
+    "epochs": 5,
+    "steps": 40,
+    "seconds": 104.4,
+    "final_logged_loss": 1.3643060684204102
+  },
+  "evaluation": {
+    "total_questions": 9,
+    "known_questions": 6,
+    "unknown_questions": 3,
+    "retrieval_known_correct": 6,
+    "retrieval_unknown_correct": 3,
+    "retrieval_total_correct": 9
+  },
+  "observations": [
+    "学習後は一部の既知用語の説明が改善した",
+    "既知用語にも不正確な説明が残った",
+    "未知の架空用語3問で根拠のない説明が残った",
+    "用語集検索は今回の9問で期待した動作を示した",
+    "学習と検証は同じ58語の異なる質問文を使用した"
+  ]
+}
