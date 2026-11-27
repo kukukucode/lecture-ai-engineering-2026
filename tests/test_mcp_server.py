@@ -89,3 +89,42 @@ def test_config_mistakes_are_reported_in_words(tmp_path, text, expected):
     path.write_text(text, encoding="utf-8")
     with pytest.raises(ConfigError, match=expected):
         read_config(path)
+
+def test_summary_through_mcp(tmp_path):
+    model = TestModel(
+        call_tools=["glossary_get_lecture_summary"],
+        seed=2,
+    )
+    result = build_mcp_agent(
+        _glossary_only_config(tmp_path)
+    ).run_sync("第2回の講義内容", model=model)
+
+    returns = _parts(result, ToolReturnPart)
+    assert returns[0].tool_name == "glossary_get_lecture_summary"
+    assert "ファインチューニング" in str(returns[0].content)
+
+
+@pytest.mark.parametrize(
+    ("lecture", "expected"),
+    [
+        (2, "問題:"),
+        (0, "指定可能な講義回"),
+        (99, "指定可能な講義回"),
+    ],
+)
+def test_quiz_through_mcp(tmp_path, lecture, expected):
+    model = TestModel(
+        call_tools=["glossary_make_quiz"],
+        seed=lecture,
+    )
+    result = build_mcp_agent(
+        _glossary_only_config(tmp_path)
+    ).run_sync("確認問題を作成", model=model)
+
+    calls = _parts(result, ToolCallPart)
+    returns = _parts(result, ToolReturnPart)
+
+    assert calls[0].tool_name == "glossary_make_quiz"
+    assert calls[0].args_as_dict() == {"lecture": lecture}
+    assert returns[0].tool_name == "glossary_make_quiz"
+    assert expected in str(returns[0].content)
