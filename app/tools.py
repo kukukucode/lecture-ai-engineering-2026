@@ -142,7 +142,8 @@ def make_quiz(lecture: int) -> str:
     ]
 
     if not candidates:
-        return f"第{lecture}回の用語が見つかりませんでした。"
+        available = ", ".join(str(n) for n in sorted({e["lecture"] for e in load_glossary()}))
+        return f"第{lecture}回の用語が見つかりませんでした。指定可能な講義回: {available}"
 
     entry = random.choice(candidates)
 
